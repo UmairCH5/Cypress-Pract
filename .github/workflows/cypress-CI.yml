@@ -3,7 +3,7 @@ name: Cypress Tests
 on:
   push:
     branches:
-      - main   # or your branch name
+      - main
   pull_request:
     branches:
       - main
@@ -13,24 +13,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout the repository
+      # 1️⃣ Checkout repo
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2️⃣ Set up Node.js
+      # 2️⃣ Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'   # or version you use locally
+          node-version: '18'
 
       # 3️⃣ Install dependencies
       - name: Install dependencies
         run: npm install
 
-      # 4️⃣ Run Cypress tests
-      - name: Run Cypress
+      # 4️⃣ Run Cypress tests (correct folder path)
+      - name: Run Cypress tests
         uses: cypress-io/github-action@v6
         with:
-          build: npm run build   # only if you have a build step, else remove this line
-          start: npm start       # only if you need to start server, else remove this line
-          browser: chrome        # you can use chrome or electron
+          spec: cypress/intigration/examples/**/*.js   # ✅ Correct path to your spec files
+          browser: chrome
+
+      # 5️⃣ Upload screenshots (for debugging)
+      - name: Upload Cypress screenshots
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
+
+      # 6️⃣ Upload videos (for debugging)
+      - name: Upload Cypress videos
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: cypress-videos
+          path: cypress/videos
